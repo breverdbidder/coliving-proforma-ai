@@ -481,3 +481,6 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) file for
 **Built with ❤️ by BidDeed.AI**
 
 *Transforming co-living investment analysis with AI-powered automation*
+
+
+<!-- Deployed: 1768178472.6503782 -->

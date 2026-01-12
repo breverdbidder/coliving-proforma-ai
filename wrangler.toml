@@ -1,0 +1,39 @@
+# Cloudflare Pages Configuration
+# For Co-Living Proforma AI Frontend
+
+# This file is not strictly required for Cloudflare Pages, but provides reference
+# Actual deployment handled through Cloudflare Dashboard or Wrangler CLI
+
+[build]
+command = ""
+publish = "."
+
+[build.environment]
+NODE_VERSION = "18"
+
+# Custom headers for security
+[[headers]]
+for = "/*"
+  [headers.values]
+  X-Frame-Options = "DENY"
+  X-Content-Type-Options = "nosniff"
+  X-XSS-Protection = "1; mode=block"
+  Referrer-Policy = "strict-origin-when-cross-origin"
+  Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+  
+# Cache static assets
+[[headers]]
+for = "/*.js"
+  [headers.values]
+  Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+for = "/*.css"
+  [headers.values]
+  Cache-Control = "public, max-age=31536000, immutable"
+
+# Don't cache HTML
+[[headers]]
+for = "/*.html"
+  [headers.values]
+  Cache-Control = "public, max-age=0, must-revalidate"

@@ -2,23 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="BidDeed.AI Co-Living Proforma Analyzer - AI-Powered Real Estate Investment Analysis with FREE Zillow & Redfin Data">
-    <meta name="keywords" content="co-living, real estate, investment analysis, NOI, cap rate, proforma, Brevard County">
-    <title>BidDeed.AI - Co-Living Proforma Analyzer</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>">
-    
-    <!-- React & ReactDOM from CDN -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    
-    <!-- Babel Standalone for JSX compilation -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Lucide React Icons -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="BidDeed.AI Co-Living Proforma Analyzer - AI-Powered Real Estate Investment Analysis">
+    <title>BidDeed.AI - Co-Living Analyzer</title>
     
     <style>
         * {
@@ -28,610 +14,467 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             overflow: hidden;
+            background: #f8fafc;
         }
         
         #root {
             width: 100vw;
             height: 100vh;
-        }
-        
-        /* Loading Screen */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #10b981 100%);
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #10b981 100%);
+            padding: 20px 24px;
             color: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
         
-        .loading-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 24px;
+        .header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
         }
         
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .loading-text {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-        
-        .loading-subtext {
-            font-size: 14px;
+        .header p {
+            font-size: 13px;
             opacity: 0.9;
         }
         
-        /* Fade out loading screen */
-        .loading-screen.fade-out {
-            animation: fadeOut 0.5s forwards;
+        /* Messages */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
         }
         
-        @keyframes fadeOut {
-            to {
-                opacity: 0;
-                visibility: hidden;
-            }
+        .message {
+            margin-bottom: 16px;
+            display: flex;
+        }
+        
+        .message.user {
+            justify-content: flex-end;
+        }
+        
+        .message-bubble {
+            max-width: 85%;
+            padding: 14px 18px;
+            border-radius: 16px;
+            line-height: 1.5;
+            font-size: 14px;
+        }
+        
+        .message.user .message-bubble {
+            background: #2563eb;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+        
+        .message.assistant .message-bubble {
+            background: white;
+            color: #111827;
+            border: 1px solid #e5e7eb;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        /* Quick actions */
+        .quick-actions {
+            padding: 16px 20px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .quick-action {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 13px;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quick-action:active {
+            background: #eff6ff;
+            border-color: #3b82f6;
+        }
+        
+        /* Input */
+        .input-area {
+            padding: 16px 20px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .input-form {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .input-box {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .input-box:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .send-button {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        
+        .send-button:disabled {
+            background: #e5e7eb;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Pipeline */
+        .pipeline {
+            background: white;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .pipeline-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .pipeline-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        
+        .stage {
+            padding: 6px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 10px;
+            transition: all 0.3s;
+        }
+        
+        .stage.completed {
+            background: #10b981;
+            color: white;
+        }
+        
+        .stage.pending {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+        
+        .stage-icon {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #10b981;
+            transition: width 0.3s;
+        }
+        
+        /* Dashboard */
+        .dashboard {
+            background: #f8fafc;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+            margin-top: 4px;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .header h1 { font-size: 20px; }
+            .header p { font-size: 12px; }
+            .pipeline-grid { grid-template-columns: repeat(3, 1fr); }
+            .quick-actions { grid-template-columns: 1fr; max-height: 150px; }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-spinner"></div>
-        <div class="loading-text">BidDeed.AI Co-Living Analyzer</div>
-        <div class="loading-subtext">Loading 12-stage AI pipeline...</div>
+    <div id="root">
+        <div class="header">
+            <h1>🏠 BidDeed.AI Co-Living Analyzer</h1>
+            <p>AI-Powered Investment Analysis • FREE Zillow & Redfin Data • $0/month</p>
+        </div>
+        
+        <div id="pipeline" style="display: none;"></div>
+        
+        <div class="messages" id="messages">
+            <div class="message assistant">
+                <div class="message-bubble">
+                    <strong>🏠 Welcome to BidDeed.AI Co-Living Analyzer</strong><br><br>
+                    I'm your AI-powered investment analyst specializing in Brevard County co-living properties.<br><br>
+                    <strong>What I Can Analyze:</strong><br>
+                    ✅ Property financials (NOI, Cap Rate, Cash-on-Cash)<br>
+                    ✅ Market data from Zillow & Redfin (FREE APIs)<br>
+                    ✅ 12-stage comprehensive analysis pipeline<br>
+                    ✅ Sensitivity scenarios & risk assessment<br><br>
+                    <strong>Try the quick actions below or type your question!</strong>
+                </div>
+            </div>
+        </div>
+        
+        <div class="quick-actions" id="quickActions">
+            <button class="quick-action" onclick="setInput('Analyze 20-unit property at $900/bedroom in Austin, TX')">
+                ✨ Analyze 20-unit property at $900/bedroom
+            </button>
+            <button class="quick-action" onclick="setInput('Show sensitivity analysis for 80-95% occupancy')">
+                📊 Sensitivity analysis for 80-95% occupancy
+            </button>
+            <button class="quick-action" onclick="setInput('What is the break-even occupancy rate?')">
+                🎯 What's the break-even occupancy rate?
+            </button>
+            <button class="quick-action" onclick="setInput('Compare Class A vs Class B co-living')">
+                🏢 Compare Class A vs Class B co-living
+            </button>
+            <button class="quick-action" onclick="setInput('Calculate returns with $50K down payment')">
+                💰 Calculate returns with $50K down
+            </button>
+            <button class="quick-action" onclick="setInput('Generate full investment memo')">
+                📄 Generate full investment memo
+            </button>
+        </div>
+        
+        <div class="input-area">
+            <form class="input-form" onsubmit="handleSubmit(event)">
+                <input 
+                    type="text" 
+                    class="input-box" 
+                    id="inputBox"
+                    placeholder="Ask about co-living analysis, NOI, cap rates, scenarios..."
+                    autocomplete="off"
+                >
+                <button type="submit" class="send-button" id="sendButton">
+                    Analyze
+                </button>
+            </form>
+        </div>
     </div>
     
-    <!-- React Root -->
-    <div id="root"></div>
-    
-    <!-- React Component -->
-    <script type="text/babel">
-        const { useState, useRef, useEffect } = React;
-        const { 
-            Send, Download, FileSpreadsheet, FileText, BarChart3, Building2, 
-            DollarSign, TrendingUp, AlertCircle, CheckCircle, Upload, Home, 
-            MapPin, Bed, Bath, Calendar, Maximize, ChevronRight, Loader2, Sparkles 
-        } = lucide;
-
-        const CoLivingProformaUI = () => {
-          // State Management
-          const [messages, setMessages] = useState([{
-            role: 'assistant',
-            content: `🏠 **Welcome to BidDeed.AI Co-Living Analyzer**
-
-I'm your AI-powered investment analyst specializing in Brevard County co-living properties.
-
-**What I Can Analyze:**
-✅ Property financials (NOI, Cap Rate, Cash-on-Cash)
-✅ Market data from Zillow & Redfin (FREE APIs)
-✅ 12-stage comprehensive analysis pipeline
-✅ Sensitivity scenarios & risk assessment
-
-**Try These:**
-• "Analyze property at 123 Main St, Austin, TX 78701"
-• "What's the NOI for a 20-unit property at $900/bedroom?"
-• "Show me sensitivity analysis for 85-95% occupancy"
-
-Ready to analyze your co-living investment?`
-          }]);
-          
-          const [inputValue, setInputValue] = useState('');
-          const [isAnalyzing, setIsAnalyzing] = useState(false);
-          const [currentStage, setCurrentStage] = useState(0);
-          const [propertyData, setPropertyData] = useState(null);
-          const [analysisResults, setAnalysisResults] = useState(null);
-          const [showDashboard, setShowDashboard] = useState(false);
-          
-          const messagesEndRef = useRef(null);
-
-          // 12-Stage Pipeline Configuration
-          const pipelineStages = [
-            { id: 1, name: 'Discovery', icon: '🔍', description: 'Extract property details from query' },
-            { id: 2, name: 'Data Extraction', icon: '📊', description: 'Load Excel template & user inputs' },
-            { id: 3, name: 'Assumptions', icon: '✅', description: 'Validate financial assumptions' },
-            { id: 4, name: 'Unit Mix', icon: '🏠', description: 'Analyze bedroom configurations' },
-            { id: 5, name: 'Revenue', icon: '💰', description: 'Calculate income streams' },
-            { id: 6, name: 'Expenses', icon: '📉', description: 'Operating expense breakdown' },
-            { id: 7, name: 'Cash Flow', icon: '💵', description: 'NOI & debt service analysis' },
-            { id: 8, name: 'Returns', icon: '📈', description: 'Cap Rate, CoC, IRR calculations' },
-            { id: 9, name: 'Sensitivity', icon: '🎯', description: 'Stress testing scenarios' },
-            { id: 10, name: 'Risk', icon: '⚠️', description: 'Market & operational risk' },
-            { id: 11, name: 'Reports', icon: '📄', description: 'Generate Excel, PDF, Dashboard' },
-            { id: 12, name: 'Recommendations', icon: '🎯', description: 'AI investment recommendations' }
-          ];
-
-          // Auto-scroll
-          const scrollToBottom = () => {
-            messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-          };
-
-          useEffect(() => {
-            scrollToBottom();
-          }, [messages]);
-
-          // Simulate 12-stage analysis
-          const runAnalysisPipeline = async (query) => {
-            setIsAnalyzing(true);
-            setCurrentStage(0);
+    <script>
+        // Global state
+        let isAnalyzing = false;
+        let currentStage = 0;
+        
+        const stages = [
+            { name: 'Discovery', icon: '🔍' },
+            { name: 'Data Extract', icon: '📊' },
+            { name: 'Assumptions', icon: '✅' },
+            { name: 'Unit Mix', icon: '🏠' },
+            { name: 'Revenue', icon: '💰' },
+            { name: 'Expenses', icon: '📉' },
+            { name: 'Cash Flow', icon: '💵' },
+            { name: 'Returns', icon: '📈' },
+            { name: 'Sensitivity', icon: '🎯' },
+            { name: 'Risk', icon: '⚠️' },
+            { name: 'Reports', icon: '📄' },
+            { name: 'Recommend', icon: '🎯' }
+        ];
+        
+        function setInput(text) {
+            document.getElementById('inputBox').value = text;
+            document.getElementById('inputBox').focus();
+        }
+        
+        function addMessage(role, content) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            messageDiv.innerHTML = `<div class="message-bubble">${content}</div>`;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function showPipeline() {
+            const pipelineDiv = document.getElementById('pipeline');
+            pipelineDiv.style.display = 'block';
+            
+            let html = `
+                <div class="pipeline">
+                    <div class="pipeline-header">
+                        <span>12-Stage Analysis Pipeline</span>
+                        <span>Stage <span id="currentStageNum">0</span>/12</span>
+                    </div>
+                    <div class="pipeline-grid" id="pipelineGrid"></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+            `;
+            pipelineDiv.innerHTML = html;
+            
+            const grid = document.getElementById('pipelineGrid');
+            stages.forEach((stage, i) => {
+                const stageDiv = document.createElement('div');
+                stageDiv.className = 'stage pending';
+                stageDiv.id = `stage${i}`;
+                stageDiv.innerHTML = `
+                    <div class="stage-icon">${stage.icon}</div>
+                    <div>${stage.name}</div>
+                `;
+                grid.appendChild(stageDiv);
+            });
+        }
+        
+        function updatePipeline(stage) {
+            currentStage = stage;
+            document.getElementById('currentStageNum').textContent = stage;
+            document.getElementById('progressFill').style.width = `${(stage / 12) * 100}%`;
             
             for (let i = 0; i < 12; i++) {
-              setCurrentStage(i + 1);
-              await new Promise(resolve => setTimeout(resolve, 800));
+                const stageDiv = document.getElementById(`stage${i}`);
+                if (i < stage) {
+                    stageDiv.className = 'stage completed';
+                } else {
+                    stageDiv.className = 'stage pending';
+                }
+            }
+        }
+        
+        function hidePipeline() {
+            document.getElementById('pipeline').style.display = 'none';
+        }
+        
+        async function runAnalysis() {
+            showPipeline();
+            
+            for (let i = 1; i <= 12; i++) {
+                updatePipeline(i);
+                await new Promise(resolve => setTimeout(resolve, 800));
             }
             
-            setIsAnalyzing(false);
-          };
-
-          // Handle message submission
-          const handleSubmit = async (e) => {
-            e.preventDefault();
-            if (!inputValue.trim() || isAnalyzing) return;
-
-            const userMessage = inputValue.trim();
-            setInputValue('');
-            
-            setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
-            
-            await runAnalysisPipeline(userMessage);
-
-            const mockPropertyData = {
-              address: '123 Main Street, Austin, TX 78701',
-              bedrooms: 20,
-              bathrooms: 15,
-              sqft: 8500,
-              yearBuilt: 2018,
-              propertyType: 'Multi-Family',
-              zestimate: 2450000,
-              rentZestimate: 18500,
-              listPrice: 2350000,
-              photos: ['https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop', 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&h=300&fit=crop'],
-              dataSources: ['zillow_pyzill', 'redfin_reteps'],
-              confidence: 0.85
-            };
-
-            const mockAnalysis = {
-              noi: 185000,
-              capRate: 7.87,
-              cashOnCash: 9.2,
-              dscr: 1.42,
-              egi: 295000,
-              opex: 110000,
-              investmentDecision: 'BUY',
-              confidenceScore: 0.88
-            };
-
-            setPropertyData(mockPropertyData);
-            setAnalysisResults(mockAnalysis);
-
-            const aiResponse = `🎉 **Analysis Complete!**
-
-**Property Identified:**
-📍 ${mockPropertyData.address}
-🏠 ${mockPropertyData.bedrooms} bedrooms | ${mockPropertyData.bathrooms} bathrooms | ${mockPropertyData.sqft.toLocaleString()} sqft
-💰 List Price: $${mockPropertyData.listPrice.toLocaleString()}
-💵 Zestimate: $${mockPropertyData.zestimate.toLocaleString()}
-🏘️ Rent Zestimate: $${mockPropertyData.rentZestimate.toLocaleString()}/mo
-
-**Financial Performance:**
-• **NOI**: $${mockAnalysis.noi.toLocaleString()}/year
-• **Cap Rate**: ${mockAnalysis.capRate}%
-• **Cash-on-Cash**: ${mockAnalysis.cashOnCash}%
-• **DSCR**: ${mockAnalysis.dscr}x
-
-**Investment Decision: ${mockAnalysis.investmentDecision}** ✅
-
-📊 View the interactive dashboard for detailed analysis.
-
-**Available Actions:**
-• Download Excel Proforma
-• Generate PDF Executive Summary
-• View Interactive Dashboard`;
-
-            setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }]);
-            setShowDashboard(true);
-          };
-
-          const quickActions = [
-            "Analyze 20-unit property at $900/bedroom in Austin, TX",
-            "Show sensitivity analysis for 80-95% occupancy",
-            "What's the break-even occupancy rate?",
-            "Compare Class A vs Class B co-living",
-            "Calculate returns with $50K down payment",
-            "Generate full investment memo"
-          ];
-
-          return (
-            <div style={{
-              fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-              height: '100vh',
-              display: 'flex',
-              flexDirection: 'column',
-              backgroundColor: '#f8fafc',
-              overflow: 'hidden'
-            }}>
-              {/* Header */}
-              <header style={{
-                background: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #10b981 100%)',
-                padding: '20px 32px',
-                color: 'white',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.15)',
-                position: 'relative',
-                overflow: 'hidden'
-              }}>
-                <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, opacity: 0.1, background: 'url("data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }} />
-                
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'relative', zIndex: 1 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <Building2 size={40} strokeWidth={2} />
-                    <div>
-                      <h1 style={{ margin: 0, fontSize: '28px', fontWeight: '700', letterSpacing: '-0.02em' }}>
-                        BidDeed.AI Co-Living Analyzer
-                      </h1>
-                      <p style={{ margin: '4px 0 0 0', fontSize: '14px', opacity: 0.9, fontWeight: '400' }}>
-                        AI-Powered Investment Analysis • Brevard County, FL • FREE Zillow & Redfin Data
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ 
-                      background: 'rgba(255,255,255,0.2)', 
-                      padding: '8px 16px', 
-                      borderRadius: '20px',
-                      backdropFilter: 'blur(10px)',
-                      border: '1px solid rgba(255,255,255,0.3)'
-                    }}>
-                      <span style={{ fontSize: '12px', fontWeight: '600', opacity: 0.95 }}>
-                        ⚡ 95% Data Coverage • $0/month
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </header>
-
-              {/* Main Content */}
-              <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-                {/* Chat Panel */}
-                <div style={{ 
-                  flex: showDashboard ? '0 0 50%' : '1',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  borderRight: showDashboard ? '1px solid #e5e7eb' : 'none',
-                  transition: 'flex 0.3s ease'
-                }}>
-                  {/* Pipeline Progress */}
-                  {isAnalyzing && (
-                    <div style={{
-                      padding: '16px 24px',
-                      backgroundColor: 'white',
-                      borderBottom: '1px solid #e5e7eb'
-                    }}>
-                      <div style={{ marginBottom: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <span style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>
-                          12-Stage Analysis Pipeline
-                        </span>
-                        <span style={{ fontSize: '12px', color: '#6b7280' }}>
-                          Stage {currentStage}/12
-                        </span>
-                      </div>
-                      
-                      <div style={{
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(6, 1fr)',
-                        gap: '8px'
-                      }}>
-                        {pipelineStages.map((stage) => (
-                          <div
-                            key={stage.id}
-                            style={{
-                              padding: '8px',
-                              borderRadius: '8px',
-                              backgroundColor: currentStage >= stage.id ? '#10b981' : '#f3f4f6',
-                              border: currentStage === stage.id ? '2px solid #059669' : '1px solid #e5e7eb',
-                              transition: 'all 0.3s ease',
-                              position: 'relative'
-                            }}
-                            title={`${stage.name}: ${stage.description}`}
-                          >
-                            <div style={{ 
-                              fontSize: '18px', 
-                              textAlign: 'center',
-                              filter: currentStage >= stage.id ? 'grayscale(0%)' : 'grayscale(100%)'
-                            }}>
-                              {stage.icon}
-                            </div>
-                            <div style={{
-                              fontSize: '9px',
-                              fontWeight: '600',
-                              textAlign: 'center',
-                              marginTop: '4px',
-                              color: currentStage >= stage.id ? 'white' : '#6b7280'
-                            }}>
-                              {stage.name}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                      
-                      <div style={{
-                        marginTop: '12px',
-                        height: '4px',
-                        backgroundColor: '#e5e7eb',
-                        borderRadius: '2px',
-                        overflow: 'hidden'
-                      }}>
-                        <div style={{
-                          height: '100%',
-                          backgroundColor: '#10b981',
-                          width: `${(currentStage / 12) * 100}%`,
-                          transition: 'width 0.3s ease',
-                          boxShadow: '0 0 10px rgba(16, 185, 129, 0.5)'
-                        }} />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Messages */}
-                  <div style={{
-                    flex: 1,
-                    overflowY: 'auto',
-                    padding: '24px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '16px'
-                  }}>
-                    {messages.map((message, index) => (
-                      <div
-                        key={index}
-                        style={{
-                          display: 'flex',
-                          justifyContent: message.role === 'user' ? 'flex-end' : 'flex-start'
-                        }}
-                      >
-                        <div
-                          style={{
-                            maxWidth: '85%',
-                            padding: '16px 20px',
-                            borderRadius: message.role === 'user' ? '20px 20px 4px 20px' : '20px 20px 20px 4px',
-                            backgroundColor: message.role === 'user' ? '#2563eb' : 'white',
-                            color: message.role === 'user' ? 'white' : '#111827',
-                            boxShadow: message.role === 'user' ? '0 4px 12px rgba(37, 99, 235, 0.2)' : '0 2px 8px rgba(0,0,0,0.08)',
-                            whiteSpace: 'pre-wrap',
-                            lineHeight: '1.6',
-                            fontSize: '14px',
-                            border: message.role === 'assistant' ? '1px solid #e5e7eb' : 'none'
-                          }}
-                        >
-                          {message.content}
-                        </div>
-                      </div>
-                    ))}
-
-                    {isAnalyzing && (
-                      <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                        <div style={{
-                          padding: '16px 20px',
-                          borderRadius: '20px 20px 20px 4px',
-                          backgroundColor: 'white',
-                          border: '1px solid #e5e7eb',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '12px'
-                        }}>
-                          <Loader2 size={18} className="animate-spin" />
-                          <span style={{ fontSize: '14px', color: '#6b7280' }}>
-                            Running {pipelineStages[currentStage - 1]?.name || 'analysis'}...
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    <div ref={messagesEndRef} />
-                  </div>
-
-                  {/* Quick Actions & Input */}
-                  <div style={{
-                    padding: '16px 24px',
-                    backgroundColor: 'white',
-                    borderTop: '1px solid #e5e7eb'
-                  }}>
-                    <div style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                      gap: '8px',
-                      marginBottom: '16px'
-                    }}>
-                      {quickActions.map((action, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setInputValue(action)}
-                          disabled={isAnalyzing}
-                          style={{
-                            background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-                            border: '1px solid #e5e7eb',
-                            borderRadius: '10px',
-                            padding: '12px 14px',
-                            cursor: isAnalyzing ? 'not-allowed' : 'pointer',
-                            textAlign: 'left',
-                            fontSize: '13px',
-                            color: '#374151',
-                            opacity: isAnalyzing ? 0.5 : 1,
-                            transition: 'all 0.2s',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '8px'
-                          }}
-                        >
-                          <Sparkles size={14} style={{ color: '#3b82f6', flexShrink: 0 }} />
-                          <span style={{ flex: 1 }}>{action}</span>
-                        </button>
-                      ))}
-                    </div>
-
-                    <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '12px' }}>
-                      <input
-                        type="text"
-                        value={inputValue}
-                        onChange={(e) => setInputValue(e.target.value)}
-                        placeholder="Ask about co-living analysis, NOI, cap rates, scenarios..."
-                        disabled={isAnalyzing}
-                        style={{
-                          flex: 1,
-                          padding: '14px 18px',
-                          border: '2px solid #e5e7eb',
-                          borderRadius: '12px',
-                          fontSize: '14px',
-                          outline: 'none',
-                          backgroundColor: isAnalyzing ? '#f9fafb' : 'white'
-                        }}
-                      />
-                      
-                      <button
-                        type="submit"
-                        disabled={!inputValue.trim() || isAnalyzing}
-                        style={{
-                          background: inputValue.trim() && !isAnalyzing ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)' : '#e5e7eb',
-                          color: inputValue.trim() && !isAnalyzing ? 'white' : '#9ca3af',
-                          border: 'none',
-                          borderRadius: '12px',
-                          padding: '14px 28px',
-                          cursor: inputValue.trim() && !isAnalyzing ? 'pointer' : 'not-allowed',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '8px',
-                          fontWeight: '600',
-                          fontSize: '14px',
-                          boxShadow: inputValue.trim() && !isAnalyzing ? '0 4px 12px rgba(37, 99, 235, 0.3)' : 'none'
-                        }}
-                      >
-                        {isAnalyzing ? <Loader2 size={18} className="animate-spin" /> : <Send size={18} />}
-                        Analyze
-                      </button>
-                    </form>
-                  </div>
-                </div>
-
-                {/* Dashboard Panel - Implementation continues with property cards and metrics */}
-                {showDashboard && propertyData && analysisResults && (
-                  <div style={{
-                    flex: '0 0 50%',
-                    overflowY: 'auto',
-                    backgroundColor: '#f8fafc',
-                    padding: '24px'
-                  }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-                      <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#111827' }}>
-                        Investment Dashboard
-                      </h2>
-                      <div style={{ display: 'flex', gap: '8px' }}>
-                        <button
-                          onClick={() => alert('Downloading Excel... (Connect to API endpoint /api/analyses/{id}/reports/excel)')}
-                          style={{
-                            background: '#10b981',
-                            color: 'white',
-                            border: 'none',
-                            padding: '10px 16px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            fontSize: '13px',
-                            fontWeight: '500'
-                          }}
-                        >
-                          <FileSpreadsheet size={16} />
-                          Excel
-                        </button>
-                        <button
-                          onClick={() => alert('Generating PDF... (Connect to API endpoint /api/analyses/{id}/reports/pdf)')}
-                          style={{
-                            background: '#ef4444',
-                            color: 'white',
-                            border: 'none',
-                            padding: '10px 16px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            fontSize: '13px',
-                            fontWeight: '500'
-                          }}
-                        >
-                          <FileText size={16} />
-                          PDF
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Property Card & Metrics - Shortened for brevity */}
-                    <div style={{
-                      backgroundColor: 'white',
-                      borderRadius: '16px',
-                      padding: '24px',
-                      marginBottom: '20px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-                      border: '1px solid #e5e7eb',
-                      textAlign: 'center'
-                    }}>
-                      <h3 style={{ fontSize: '18px', color: '#10b981', marginBottom: '12px' }}>
-                        ✅ Investment Decision: {analysisResults.investmentDecision}
-                      </h3>
-                      <p style={{ fontSize: '14px', color: '#6b7280' }}>
-                        Complete dashboard with property cards, financial metrics, and interactive charts loading...
-                      </p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Animations */}
-              <style>{`
-                @keyframes pulse {
-                  0%, 100% { opacity: 1; }
-                  50% { opacity: 0.5; }
-                }
-                .animate-spin {
-                  animation: spin 1s linear infinite;
-                }
-                @keyframes spin {
-                  from { transform: rotate(0deg); }
-                  to { transform: rotate(360deg); }
-                }
-              `}</style>
-            </div>
-          );
-        };
-
-        // Render app
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<CoLivingProformaUI />);
+            hidePipeline();
+        }
         
-        // Hide loading screen after React loads
-        setTimeout(() => {
-            const loadingScreen = document.getElementById('loadingScreen');
-            loadingScreen.classList.add('fade-out');
-        }, 1000);
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            const input = document.getElementById('inputBox');
+            const button = document.getElementById('sendButton');
+            const value = input.value.trim();
+            
+            if (!value || isAnalyzing) return;
+            
+            // Add user message
+            addMessage('user', value);
+            input.value = '';
+            
+            // Disable input
+            isAnalyzing = true;
+            button.innerHTML = '<div class="loading"></div>';
+            button.disabled = true;
+            input.disabled = true;
+            
+            // Run analysis
+            await runAnalysis();
+            
+            // Add AI response
+            const response = `
+                🎉 <strong>Analysis Complete!</strong><br><br>
+                <strong>Property Identified:</strong><br>
+                📍 123 Main Street, Austin, TX 78701<br>
+                🏠 20 bedrooms | 15 bathrooms | 8,500 sqft<br>
+                💰 List Price: $2,350,000<br>
+                💵 Zestimate: $2,450,000<br>
+                🏘️ Rent Zestimate: $18,500/mo<br><br>
+                <strong>Financial Performance:</strong><br>
+                • <strong>NOI</strong>: $185,000/year<br>
+                • <strong>Cap Rate</strong>: 7.87%<br>
+                • <strong>Cash-on-Cash</strong>: 9.2%<br>
+                • <strong>DSCR</strong>: 1.42x<br><br>
+                <strong>Investment Decision: BUY</strong> ✅<br><br>
+                <em>Connect API for Excel/PDF exports and full 12-stage analysis with real Zillow/Redfin data!</em>
+            `;
+            
+            addMessage('assistant', response);
+            
+            // Re-enable input
+            isAnalyzing = false;
+            button.innerHTML = 'Analyze';
+            button.disabled = false;
+            input.disabled = false;
+            input.focus();
+        }
+        
+        // Initialize
+        console.log('✅ BidDeed.AI Co-Living Analyzer loaded successfully');
+        console.log('📱 Mobile-optimized version active');
     </script>
 </body>
 </html>

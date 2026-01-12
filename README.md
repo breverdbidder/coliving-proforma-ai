@@ -69,6 +69,8 @@ Outputs: Excel (.xlsx) | PDF (.pdf) | Dashboard (.json)
 - LangChain + Anthropic Claude Sonnet 4
 - OpenPyXL (Excel generation)
 - ReportLab (PDF generation)
+- **Supabase** (Database & Data Persistence)
+- **FastAPI** (REST API)
 
 **Frontend:**
 - React 18+
@@ -78,7 +80,8 @@ Outputs: Excel (.xlsx) | PDF (.pdf) | Dashboard (.json)
 **Infrastructure:**
 - GitHub Actions (CI/CD)
 - Cloudflare Pages (Frontend hosting)
-- Supabase (Future: Database integration)
+- **Supabase** (PostgreSQL database)
+- Railway / Render / Cloudflare Workers (API hosting)
 
 ---
 
@@ -102,6 +105,54 @@ Stage 12: Recommendations      → AI-powered investment advice
 ```
 
 Each stage is a separate LangGraph node with state management and error handling.
+
+---
+
+## 🗄️ Supabase Integration
+
+### Database Schema
+
+Co-Living Proforma AI uses Supabase PostgreSQL for data persistence:
+
+**5 Core Tables:**
+1. **coliving_properties** - Property records with assumptions
+2. **coliving_analyses** - Financial analysis results
+3. **coliving_reports** - Generated reports (Excel, PDF, Dashboard)
+4. **coliving_conversations** - Chatbot message history
+5. **coliving_scenarios** - Scenario comparison data
+
+### Setup Instructions
+
+1. **Execute SQL Schema**:
+   ```bash
+   # Copy SQL from supabase_schema.sql
+   # Run in Supabase SQL Editor:
+   # https://supabase.com/dashboard/project/mocerqjnksmhcjzxrewo/sql/new
+   ```
+
+2. **Configure Environment**:
+   ```bash
+   cp .env.example .env
+   # Add your Supabase credentials
+   ```
+
+3. **Test Connection**:
+   ```bash
+   python3 coliving_supabase.py
+   ```
+
+### API Endpoints
+
+FastAPI backend with full CRUD operations:
+
+- `POST /api/analyze` - Run analysis and save to database
+- `GET /api/properties` - List all properties
+- `GET /api/analyses/{id}` - Get analysis results
+- `GET /api/analyses/{id}/reports/excel` - Generate Excel
+- `GET /api/analyses/{id}/reports/pdf` - Generate PDF
+- `GET /api/analytics` - Platform analytics
+
+**Full Documentation**: See [SUPABASE_DEPLOYMENT.md](SUPABASE_DEPLOYMENT.md)
 
 ---
 

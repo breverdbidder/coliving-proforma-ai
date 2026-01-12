@@ -28,6 +28,15 @@ uvicorn[standard]>=0.24.0
 supabase>=2.0.0
 postgrest>=0.13.0
 
+# FREE GitHub Repo Integrations - Zillow/Redfin
+pyzill>=0.1.0  # johnbalvin/pyzill - Zillow Internal API
+redfin>=0.4.0  # reteps/redfin - Redfin Stingray API wrapper
+
+# Web Scraping (for fallback scrapers)
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+selenium>=4.15.0  # Optional: for dynamic scraping
+
 # Environment Management
 python-dotenv>=1.0.0
 
@@ -46,6 +55,9 @@ pydantic>=2.0.0
 
 # Logging
 structlog>=23.1.0
+
+# Redis for Caching
+redis>=5.0.0
 
 # Development Tools (Optional)
 black>=23.0.0

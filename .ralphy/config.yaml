@@ -1,0 +1,142 @@
+# =============================================================================
+# RALPHY PROJECT CONFIGURATION - BidDeed.AI
+# =============================================================================
+# This configuration defines project boundaries, commands, and rules
+# for autonomous Claude Code execution via Ralphy
+# =============================================================================
+
+project:
+  name: "BidDeed.AI"
+  description: "Agentic AI foreclosure auction intelligence platform"
+  language: "Python"
+  framework: "FastAPI + LangGraph"
+  version: "13.4.0"
+
+# Repository information
+repository:
+  owner: "breverdbidder"
+  name: "brevard-bidder-scraper"
+  default_branch: "main"
+  
+# Build and test commands
+commands:
+  test: "pytest tests/ -v --tb=short"
+  lint: "ruff check src/"
+  format: "ruff format src/"
+  type_check: "mypy src/ --ignore-missing-imports"
+  build: "pip install -e ."
+  
+# Pre-commit checks (run before marking task complete)
+checks:
+  - "ruff check src/"
+  - "pytest tests/ -x --tb=line"
+
+# Project rules for Claude Code to follow
+rules:
+  # Code style
+  - "Use Python 3.11+ features (match statements, type hints)"
+  - "Follow PEP 8 with 88 character line limit (Black/Ruff style)"
+  - "Use httpx for all HTTP requests (not requests library)"
+  - "Use pydantic v2 for data validation"
+  - "Async-first: prefer async def over sync functions"
+  
+  # Architecture rules
+  - "All scrapers inherit from BaseScraper in src/scrapers/base.py"
+  - "Use Supabase client from src/db/supabase_client.py"
+  - "Log to structured JSON format using structlog"
+  - "Implement circuit breakers for external API calls"
+  
+  # Testing rules
+  - "Write pytest tests for new functionality"
+  - "Use pytest-asyncio for async tests"
+  - "Mock external API calls in tests"
+  
+  # Documentation
+  - "Update CLAUDE.md with architectural decisions"
+  - "Add docstrings to public functions"
+  
+  # Security
+  - "Never hardcode API keys or secrets"
+  - "Use environment variables for configuration"
+  - "Validate all external input"
+
+# Directories/files that should NEVER be modified
+boundaries:
+  never_touch:
+    # IP Protection Layer
+    - "src/layer8/**"
+    - "src/ml/models/*.pkl"
+    - "src/ml/models/*.joblib"
+    
+    # Security
+    - "*.env"
+    - "*.env.*"
+    - ".env.example"
+    - "secrets/**"
+    
+    # Lock files
+    - "*.lock"
+    - "package-lock.json"
+    - "poetry.lock"
+    
+    # Generated files
+    - "*.pyc"
+    - "__pycache__/**"
+    - ".pytest_cache/**"
+    - "dist/**"
+    - "build/**"
+    
+    # Git
+    - ".git/**"
+    
+  # Directories that require extra caution
+  caution:
+    - "src/db/migrations/**"  # Database migrations need review
+    - "src/api/auth/**"       # Authentication code
+    - ".github/workflows/**"  # CI/CD pipelines
+
+# Smart Router configuration for LLM calls
+llm_config:
+  default_model: "claude-sonnet-4-5-20250929"
+  fallback_model: "gemini-2.5-flash"
+  max_tokens: 4096
+  temperature: 0.1
+  
+# Task execution limits
+execution:
+  max_iterations: 50
+  timeout_minutes: 60
+  retry_attempts: 3
+  pause_between_iterations_seconds: 2
+  
+# Commit message format
+commit:
+  prefix: "🤖"
+  format: "{prefix} {type}: {description}"
+  types:
+    - "feat"      # New feature
+    - "fix"       # Bug fix
+    - "refactor"  # Code refactoring
+    - "test"      # Adding tests
+    - "docs"      # Documentation
+    - "chore"     # Maintenance
+
+# Integration points
+integrations:
+  supabase:
+    tables:
+      - "sprint_tasks"
+      - "insights"
+      - "daily_metrics"
+      - "historical_auctions"
+    
+  github:
+    auto_commit: true
+    auto_push: true
+    create_prs: false  # Direct to main for now
+    
+# Parallel execution (future)
+parallel:
+  enabled: false
+  max_agents: 3
+  isolation: "worktree"  # Each agent gets isolated git worktree
